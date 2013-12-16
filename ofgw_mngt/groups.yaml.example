@@ -1,0 +1,15 @@
+groups:
+  - name: group1
+    required_params:
+      - id
+      - host
+      - hal
+    optional_params:
+      - login
+
+  - name: group2
+    required_params:
+      - id
+      - host
+    optional_params:
+      - login
