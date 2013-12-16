@@ -15,3 +15,7 @@ docs/_build/
 # Sublime editor
 *.sublime-project
 *.sublime-workspace
+
+# OFGW Mngt Configuration
+inventory.ini
+groups.yaml
