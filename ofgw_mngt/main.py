@@ -10,22 +10,53 @@ actions on non-OpenFlow capatible devices.
 import sys
 import argparse
 import yaml
-import ConfigParser
+
+class InventoryParser(object):
+    """Inventory configuration parser"""
+    def __init__(self, filename="./inventory.conf"):
+        
+        self.groups = []
+        self.params={}
+        with open(filename) as fh:
+            self.lines = fh.readlines()
+    
+    def getGroups(self):
+        for line in self.lines:
+            line = line.split("#")[0].strip()
+            if line.startswith("[") and line.endswith("]"):
+                group = line.strip("[]")
+                self.groups.append(group)
+        return self.groups
+
+    def getParams(self, group=None):
+        currentGroup=""
+        d = {}
+        if group != None:
+            for line in self.lines:
+                line = line.split("#")[0].strip()
+                if line.startswith("[") and line.endswith("]"):
+                    currentGroup = line.strip("[]")
+                    d[currentGroup] = []
+                elif line != "":
+                    t = []
+                    params = line.split(" ")
+                    for param in params:
+                        if param != "":
+                            param = param.split("=")
+                            key = param[0]
+                            value = param[1]
+                            t.append({key:value})
+                    d[currentGroup].append(t)
+
+        self.params = d
+        return self.params
+                
 
 
-def parseConfig(inventory_conf="./inventory.ini", groups_conf="./groups.yaml"):
+def parseGroupConfig(inventory_conf="./inventory.conf", groups_conf="./groups.yaml"):
     conf_invent = open(groups_conf, 'r')
-    print yaml.load(conf_invent)
+    return yaml.load(conf_invent)
 
-    # Config = MyParser()
-    parser = ConfigParser.ConfigParser()
-    parser.read(inventory_conf)
-    for section_name in parser.sections():
-        print 'Section:', section_name
-        print '  Options:', parser.options(section_name)
-        for name, value in parser.items(section_name):
-            print '  %s = %s' % (name, value)
-        print
 
 if __name__ == '__main__':
     # if len(sys.argv) < 1:
@@ -62,6 +93,10 @@ if __name__ == '__main__':
         print "Reset device to factory setting initialized...\n"
     elif command == "config":
         print "Parsing the configuration...\n"
-        parseConfig()
+        print "Group configuration\n------------------"
+        print parseGroupConfig()
+        print "\nHost parameters configuration\n---------------------------"
+        parser = InventoryParser()
+        print parser.getParams('group1')
 
     # print args.accumulate(args.integers)

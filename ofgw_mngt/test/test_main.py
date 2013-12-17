@@ -8,6 +8,9 @@ class ConfigurationTests(unittest.TestCase):
     def testInventory(self):
         self.failUnless(False)
 
+    def testInventoryParser(self):
+        self.failUnless(False)
+
 def main():
     unittest.main()
 

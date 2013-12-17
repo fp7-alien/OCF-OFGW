@@ -17,5 +17,5 @@ docs/_build/
 *.sublime-workspace
 
 # OFGW Mngt Configuration
-inventory.ini
+inventory.conf
 groups.yaml

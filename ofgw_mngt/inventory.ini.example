@@ -1,6 +1,0 @@
-[group1]
-id=ID1 host=127.0.0.1
-id=ID2 host=127.0.0.3
-
-[group2]
-id=ID2 host=127.0.0.2
