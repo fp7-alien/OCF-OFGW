@@ -19,6 +19,8 @@ class InventoryParser(object):
         self.params={}
         with open(filename) as fh:
             self.lines = fh.readlines()
+        self.getGroups()
+        self.getParams()
     
     def getGroups(self):
         for line in self.lines:
@@ -31,7 +33,7 @@ class InventoryParser(object):
     def getParams(self, group=None):
         currentGroup=""
         d = {}
-        if group != None:
+        if group == None:
             for line in self.lines:
                 line = line.split("#")[0].strip()
                 if line.startswith("[") and line.endswith("]"):
@@ -48,9 +50,10 @@ class InventoryParser(object):
                             t.append({key:value})
                     d[currentGroup].append(t)
 
-        self.params = d
-        return self.params
-                
+            self.params = d
+            return self.params
+        else:
+            return self.params[group]
 
 
 def parseGroupConfig(inventory_conf="./inventory.conf", groups_conf="./groups.yaml"):
@@ -59,44 +62,64 @@ def parseGroupConfig(inventory_conf="./inventory.conf", groups_conf="./groups.ya
 
 
 if __name__ == '__main__':
-    # if len(sys.argv) < 1:
-    #     usage();
-
     parser = argparse.ArgumentParser(description="OFGW management script")
-    # group = parser.add_mutually_exclusive_group()
-    # parser.add_argument("list",
-    #                     help="Get list of available devices",
-    #                     action="store_true")
-    # parser.add_argument("reboot",
-    #                     help="Reboot the selected device",
-    #                     action="store_true")
-    # parser.add_argument("reset",
-    #                     help="Restore the factory settings on device",
-    #                     action="store_true")
-    parser.add_argument("command",
-                        choices=["list", "reboot", "reset", "config"],
-                        help="Management action")
-    # parser.add_argument("DEVICE_ID",
-    #                     help="Device identifier",
-    #                     action="store_const")
-    parser.add_argument("-s", "--status",
-                        help="Get device status",
-                        action="store_true")
+
+    subparsers = parser.add_subparsers(help='Management command', dest="command")
+
+    # List parser
+    parser_list = subparsers.add_parser('list', help='List all devices')
+    print parser_list
+
+    # Reboot parser
+    parser_reboot = subparsers.add_parser('reboot', help='Reboot the device [DEVICE_ID]')
+    parser_reboot.add_argument("DEVICE_ID",
+                        help="Device identifier")
+
+    # Factory-reset parser
+    parser_fact_reset = subparsers.add_parser('fact-reset', help='Reset the device and restory the factory settings {DEVICE_ID}')
+    parser_fact_reset.add_argument("DEVICE_ID",
+                        help="Device identifier")
+
+    # Show parser
+    parser_show = subparsers.add_parser('show', help='Show the device configuration/status {DEVICE_ID} [--ports, --of, --tables, --neighbors]')
+    parser_show.add_argument("DEVICE_ID",
+                        help="Device identifier")
+    parser_show.add_argument("--all",
+                        action="store_true",
+                        help="Show all configuration - DEFAULT parameter")
+    parser_show.add_argument("--ports",
+                        action="store_true",
+                    help="Show port status")
+    parser_show.add_argument("--of",
+                        action="store_true",
+                    help="Show OpenFlow configuration")
+    parser_show.add_argument("--tables",
+                        action="store_true",
+                    help="Show OpenFlow tables dump")
+    parser_show.add_argument("--neighbors",
+                        action="store_true",
+                    help="Show device's neighbors")
+    
     args = parser.parse_args()
+
     command = args.command
+       
     
     if command == "list":
         print "Listing devices...\n"
     elif command == "reboot":
         print "Device reboot initialized...\n"
-    elif command == "reset":
+    elif command == "factory-reset":
         print "Reset device to factory setting initialized...\n"
     elif command == "config":
         print "Parsing the configuration...\n"
-        print "Group configuration\n------------------"
-        print parseGroupConfig()
-        print "\nHost parameters configuration\n---------------------------"
-        parser = InventoryParser()
-        print parser.getParams('group1')
+        if groupsBool:           
+            print parseGroupConfig()
+            sys.exit()
+        else:
+            print "Group configuration\n------------------"
+            print parseGroupConfig()
+            print "\nHost parameters configuration\n---------------------------"
+            parser = InventoryParser()
+            print parser.getParams(group)
 
-    # print args.accumulate(args.integers)
