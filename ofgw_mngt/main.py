@@ -68,10 +68,9 @@ if __name__ == '__main__':
 
     # List parser
     parser_list = subparsers.add_parser('list', help='List all devices')
-    print parser_list
 
     # Reboot parser
-    parser_reboot = subparsers.add_parser('reboot', help='Reboot the device [DEVICE_ID]')
+    parser_reboot = subparsers.add_parser('reboot', help='Reboot the device {DEVICE_ID}')
     parser_reboot.add_argument("DEVICE_ID",
                         help="Device identifier")
 
@@ -89,37 +88,57 @@ if __name__ == '__main__':
                         help="Show all configuration - DEFAULT parameter")
     parser_show.add_argument("--ports",
                         action="store_true",
-                    help="Show port status")
+                        help="Show port status")
     parser_show.add_argument("--of",
                         action="store_true",
-                    help="Show OpenFlow configuration")
+                        help="Show OpenFlow configuration")
     parser_show.add_argument("--tables",
                         action="store_true",
-                    help="Show OpenFlow tables dump")
+                        help="Show OpenFlow tables dump")
     parser_show.add_argument("--neighbors",
                         action="store_true",
-                    help="Show device's neighbors")
+                        help="Show device's neighbors")
     
+   # Admin parser
+    parser_admin = subparsers.add_parser('admin', help='OFGW administrator tools')
+    parser_admin.add_argument("admin_opt",
+                    choices=['config', 'users', 'all'],
+                    default="all",
+                    nargs='?',
+                    help="Show given hw group only")
+
     args = parser.parse_args()
 
     command = args.command
-       
-    
+        
     if command == "list":
         print "Listing devices...\n"
+        # TODO: add list function
+
     elif command == "reboot":
         print "Device reboot initialized...\n"
-    elif command == "factory-reset":
+        # TODO: add reboot function
+
+    elif command == "fact-reset":
         print "Reset device to factory setting initialized...\n"
-    elif command == "config":
-        print "Parsing the configuration...\n"
-        if groupsBool:           
-            print parseGroupConfig()
-            sys.exit()
-        else:
+        # TODO: add factory reset function
+
+    elif command == "show":
+        print "Getting data from device...\n"
+        # TODO: add show function
+
+    elif command == "admin":
+        admin_opt = args.admin_opt
+        if admin_opt == "config":           
             print "Group configuration\n------------------"
             print parseGroupConfig()
             print "\nHost parameters configuration\n---------------------------"
             parser = InventoryParser()
-            print parser.getParams(group)
+            print parser.getParams()
+        elif admin_opt == "users":
+            print "Getting users...\n"
+            # TODO: add users status function
+        elif admin_opt == "all":
+            print "Users & configuration\n"
+            # TODO: define functions "admin->config", "admin->users"
 
