@@ -60,6 +60,28 @@ def parseGroupConfig(inventory_conf="./inventory.conf", groups_conf="./groups.ya
     conf_invent = open(groups_conf, 'r')
     return yaml.load(conf_invent)
 
+### TODO: Fill functions
+def showPorts():
+    print "\nPort status\n-----------"
+    print "TODO\n"
+
+def showOF():
+    print "\nOpenFlow configuration\n-------------------"
+    print "TODO\n"
+
+def showTables():
+    print "\nOpenFlow tables\n---------------"
+    print "TODO\n"
+
+def showNeighbors():
+    print "\nDevice neighbors\n----------------"
+    print "TODO\n"
+
+def showSummary():
+    print "\nDevice summary\n--------------"
+    print "TODO\n"
+#####################
+
 def showConfig():
     print "\nGroup configuration\n------------------"
     print parseGroupConfig()
@@ -140,7 +162,26 @@ if __name__ == '__main__':
 
     elif command == "show":
         print "Getting data from device...\n"
-        # TODO: add show function
+        if args.all:
+            showPorts()
+            showOF()
+            showTables()
+            showNeighbors()
+
+        elif args.ports:
+            showPorts()
+
+        elif args.of:
+            showOF()
+
+        elif args.tables:
+            showTables()
+
+        elif args.neighbors:
+            showNeighbors()
+
+        else:
+            showSummary()
 
     elif command == "admin":
         admin_opt = args.admin_opt
