@@ -60,6 +60,21 @@ def parseGroupConfig(inventory_conf="./inventory.conf", groups_conf="./groups.ya
     conf_invent = open(groups_conf, 'r')
     return yaml.load(conf_invent)
 
+def showConfig():
+    print "\nGroup configuration\n------------------"
+    print parseGroupConfig()
+    print "\nHost parameters configuration\n---------------------------"
+    parser = InventoryParser()
+    print parser.getParams()
+    print "\n"
+    
+
+# TODO: Fill this when user db declared
+def showUsers():
+    print "\nUsers\n-----"
+    print "TODO\n"
+
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="OFGW management script")
@@ -130,15 +145,12 @@ if __name__ == '__main__':
     elif command == "admin":
         admin_opt = args.admin_opt
         if admin_opt == "config":           
-            print "Group configuration\n------------------"
-            print parseGroupConfig()
-            print "\nHost parameters configuration\n---------------------------"
-            parser = InventoryParser()
-            print parser.getParams()
+            showConfig()
+
         elif admin_opt == "users":
-            print "Getting users...\n"
-            # TODO: add users status function
+            showUsers()
+
         elif admin_opt == "all":
-            print "Users & configuration\n"
-            # TODO: define functions "admin->config", "admin->users"
+            showConfig()
+            showUsers()
 
