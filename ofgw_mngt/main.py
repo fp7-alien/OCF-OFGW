@@ -10,6 +10,9 @@ actions on non-OpenFlow capatible devices.
 import sys
 import argparse
 import yaml
+from utils import cuisine
+import texttable as tt
+import ping, socket
 
 class InventoryParser(object):
     """Inventory configuration parser"""
@@ -55,8 +58,18 @@ class InventoryParser(object):
         else:
             return self.params[group]
 
+    def getDevicesHosts(self):
+        devsIP = []
+        for group in self.params:
+            for param in self.params[group]:
+                for paramSpec in param:
+                    if 'host' in paramSpec:
+                        devsIP.append(paramSpec['host'])
 
-def parseGroupConfig(inventory_conf="./inventory.conf", groups_conf="./groups.yaml"):
+        return devsIP
+
+
+def parseGroupConfig(groups_conf="./groups.yaml"):
     conf_invent = open(groups_conf, 'r')
     return yaml.load(conf_invent)
 
@@ -142,14 +155,31 @@ if __name__ == '__main__':
                     choices=['config', 'users', 'all'],
                     default="all",
                     nargs='?',
-                    help="Show given hw group only")
+                    help="Show configurartion group")
 
     args = parser.parse_args()
 
     command = args.command
         
     if command == "list":
+        tab = tt.Texttable()
+        header = ['Host', 'Status', 'Ping time']
+        tab.header(header)
         print "Listing devices...\n"
+        parser = InventoryParser()
+        devs = parser.getDevicesHosts()
+        cuisine.mode_local()
+        for dev in devs:
+            status=""
+            delay = ping.do_one(dev, 1000, 64)
+            status="UP"
+            row = [dev, status, delay]
+            tab.add_row(row)
+            # except socket.error, e:
+            #     print "Ping Error:", e
+            #     status = "DOWN"
+        s = tab.draw()
+        print s
         # TODO: add list function
 
     elif command == "reboot":
