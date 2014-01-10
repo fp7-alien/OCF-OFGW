@@ -12,7 +12,7 @@ import argparse
 import yaml
 from utils import cuisine
 import texttable as tt
-import ping, socket
+import re
 
 class InventoryParser(object):
     """Inventory configuration parser"""
@@ -170,14 +170,21 @@ if __name__ == '__main__':
         devs = parser.getDevicesHosts()
         cuisine.mode_local()
         for dev in devs:
-            status=""
-            delay = ping.do_one(dev, 1000, 64)
-            status="UP"
-            row = [dev, status, delay]
+            status = "UP"
+            ping_avg = "---"
+            delay = cuisine.run_local("ping -c 1 " + dev)
+            match = re.search('(\d*)% packet loss', delay)
+            pkt_loss = match.group(1)
+            if pkt_loss=="100":
+                status = "DOWN"
+            else:
+                status="UP"
+                match = re.search('([\d]*\.[\d]*)/([\d]*\.[\d]*)/([\d]*\.[\d]*)/([\d]*\.[\d]*)', delay)
+                ping_avg = match.group(2) + " ms"
+
+            row = [dev, status, ping_avg]
             tab.add_row(row)
-            # except socket.error, e:
-            #     print "Ping Error:", e
-            #     status = "DOWN"
+
         s = tab.draw()
         print s
         # TODO: add list function
