@@ -109,6 +109,32 @@ def showUsers():
     print "\nUsers\n-----"
     print "TODO\n"
 
+def listDevices():
+    tab = tt.Texttable()
+    header = ['Host', 'Status', 'Ping time']
+    tab.header(header)
+    print "Listing devices...\n"
+    parser = InventoryParser()
+    devs = parser.getDevicesHosts()
+    cuisine.mode_local()
+    for dev in devs:
+        status = "UP"
+        ping_avg = "---"
+        delay = cuisine.run_local("ping -c 1 " + dev)
+        match = re.search('(\d*)% packet loss', delay)
+        pkt_loss = match.group(1)
+        if pkt_loss=="100":
+            status = "DOWN"
+        else:
+            status="UP"
+            match = re.search('([\d]*\.[\d]*)/([\d]*\.[\d]*)/([\d]*\.[\d]*)/([\d]*\.[\d]*)', delay)
+            ping_avg = match.group(2) + " ms"
+
+        row = [dev, status, ping_avg]
+        tab.add_row(row)
+
+    s = tab.draw()
+    print s
 
 
 if __name__ == '__main__':
@@ -162,32 +188,7 @@ if __name__ == '__main__':
     command = args.command
         
     if command == "list":
-        tab = tt.Texttable()
-        header = ['Host', 'Status', 'Ping time']
-        tab.header(header)
-        print "Listing devices...\n"
-        parser = InventoryParser()
-        devs = parser.getDevicesHosts()
-        cuisine.mode_local()
-        for dev in devs:
-            status = "UP"
-            ping_avg = "---"
-            delay = cuisine.run_local("ping -c 1 " + dev)
-            match = re.search('(\d*)% packet loss', delay)
-            pkt_loss = match.group(1)
-            if pkt_loss=="100":
-                status = "DOWN"
-            else:
-                status="UP"
-                match = re.search('([\d]*\.[\d]*)/([\d]*\.[\d]*)/([\d]*\.[\d]*)/([\d]*\.[\d]*)', delay)
-                ping_avg = match.group(2) + " ms"
-
-            row = [dev, status, ping_avg]
-            tab.add_row(row)
-
-        s = tab.draw()
-        print s
-        # TODO: add list function
+        listDevices()
 
     elif command == "reboot":
         print "Device reboot initialized...\n"
