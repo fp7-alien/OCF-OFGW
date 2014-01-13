@@ -58,15 +58,43 @@ class InventoryParser(object):
         else:
             return self.params[group]
 
-    def getDevicesHosts(self):
+    def getDevicesHosts(self, groupParam=None):
         devsIP = []
         for group in self.params:
-            for param in self.params[group]:
-                for paramSpec in param:
-                    if 'host' in paramSpec:
-                        devsIP.append(paramSpec['host'])
+            if group == groupParam or groupParam == None:
+                for param in self.params[group]:
+                    for paramSpec in param:
+                        if 'host' in paramSpec:
+                            devsIP.append(paramSpec['host'])
 
         return devsIP
+
+    def getDevicesGroupHost(self, groupParam=None):
+        devsGroupIP = {}
+        for group in self.params:
+            if group == groupParam or groupParam == None:
+                for param in self.params[group]:
+                    for paramSpec in param:
+                        if 'host' in paramSpec:
+                            devsGroupIP[paramSpec['host']] = group
+
+        return devsGroupIP  
+
+    def getDevicesIDHosts(self, groupParam=None):
+        deviceIDHost = []
+        for group in self.params:
+            if group == groupParam or groupParam == None:
+                for param in self.params[group]:
+                    host = ""
+                    ident = ""
+                    for paramSpec in param:
+                        if 'host' in paramSpec:
+                            host = paramSpec['host']
+                        elif 'id' in paramSpec:
+                            ident = paramSpec['id']  
+                    paramPair = {ident:host}
+                    deviceIDHost.append(paramPair)
+        return deviceIDHost
 
 
 def parseGroupConfig(groups_conf="./groups.yaml"):
@@ -109,29 +137,47 @@ def showUsers():
     print "\nUsers\n-----"
     print "TODO\n"
 
-def listDevices():
-    tab = tt.Texttable()
-    header = ['Host', 'Status', 'Ping time']
-    tab.header(header)
-    print "Listing devices...\n"
+def listDevices(checkStatus):
     parser = InventoryParser()
-    devs = parser.getDevicesHosts()
+    devs = parser.getDevicesIDHosts()
+    groupSearch = parser.getDevicesGroupHost()
     cuisine.mode_local()
-    for dev in devs:
-        status = "UP"
-        ping_avg = "---"
-        delay = cuisine.run_local("ping -c 1 " + dev)
-        match = re.search('(\d*)% packet loss', delay)
-        pkt_loss = match.group(1)
-        if pkt_loss=="100":
-            status = "DOWN"
-        else:
-            status="UP"
-            match = re.search('([\d]*\.[\d]*)/([\d]*\.[\d]*)/([\d]*\.[\d]*)/([\d]*\.[\d]*)', delay)
-            ping_avg = match.group(2) + " ms"
+    tab = tt.Texttable()
 
-        row = [dev, status, ping_avg]
-        tab.add_row(row)
+    if checkStatus:
+        
+        header = ['ID', 'Host', 'Device type', 'Status', 'Ping time']
+        tab.header(header)
+        print "Listing devices... Checking status...\n"
+
+        for dev in devs:
+            ident = dev.keys()[0]
+            host = dev[ident]
+            devType = groupSearch[host]
+            status = "UP"
+            ping_avg = "---"
+            delay = cuisine.run_local("ping -c 1 -w 1 " + host)    #TODO: Add ping timout param to local config
+            match = re.search('(\d*)% packet loss', delay)
+            pkt_loss = match.group(1)
+            if pkt_loss=="100":
+                status = "DOWN"
+            else:
+                status="UP"
+                match = re.search('([\d]*\.[\d]*)/([\d]*\.[\d]*)/([\d]*\.[\d]*)/([\d]*\.[\d]*)', delay)
+                ping_avg = match.group(2) + " ms"
+
+            row = [ident, host, devType, status, ping_avg]
+            tab.add_row(row)
+    else:
+        header = ['ID', 'Host', 'Device type']
+        tab.header(header)
+        print "Listing devices... Checking status...\n"
+        for dev in devs:
+            ident = dev.keys()[0]
+            host = dev[ident]
+            devType = groupSearch[host]
+            row = [ident, host, devType]
+            tab.add_row(row)
 
     s = tab.draw()
     print s
@@ -144,6 +190,9 @@ if __name__ == '__main__':
 
     # List parser
     parser_list = subparsers.add_parser('list', help='List all devices')
+    parser_list.add_argument("--status",
+                        action="store_true",
+                        help="Show device status")
 
     # Reboot parser
     parser_reboot = subparsers.add_parser('reboot', help='Reboot the device {DEVICE_ID}')
@@ -189,7 +238,7 @@ if __name__ == '__main__':
     command = args.command
         
     if command == "list":
-        listDevices()
+        listDevices(checkStatus=args.status)
 
     elif command == "reboot":
         print "Device reboot initialized...\n"
