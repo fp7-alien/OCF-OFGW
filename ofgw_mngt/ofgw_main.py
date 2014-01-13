@@ -15,7 +15,9 @@ import texttable as tt
 import re
 
 class InventoryParser(object):
-    """Inventory configuration parser"""
+    """
+    Inventory configuration parser
+    """
     def __init__(self, filename="./inventory.conf"):
         
         self.groups = []
@@ -59,6 +61,10 @@ class InventoryParser(object):
             return self.params[group]
 
     def getDevicesHosts(self, groupParam=None):
+        """
+        Returns: [Host]
+        @params: groupParam (str) - filter on group type
+        """
         devsIP = []
         for group in self.params:
             if group == groupParam or groupParam == None:
@@ -70,6 +76,10 @@ class InventoryParser(object):
         return devsIP
 
     def getDevicesGroupHost(self, groupParam=None):
+        """
+        Returns: {Host:Group}
+        @params: groupParam (str) - filter on group type
+        """
         devsGroupIP = {}
         for group in self.params:
             if group == groupParam or groupParam == None:
@@ -81,6 +91,10 @@ class InventoryParser(object):
         return devsGroupIP  
 
     def getDevicesIDHosts(self, groupParam=None):
+        """
+        Returns: [{ID:Host}]
+        @params: groupParam (str) - filter on group type
+        """
         deviceIDHost = []
         for group in self.params:
             if group == groupParam or groupParam == None:
@@ -98,6 +112,9 @@ class InventoryParser(object):
 
 
 def parseGroupConfig(groups_conf="./groups.yaml"):
+    """
+    Device groups configuration parser
+    """
     conf_invent = open(groups_conf, 'r')
     return yaml.load(conf_invent)
 
@@ -138,6 +155,10 @@ def showUsers():
     print "TODO\n"
 
 def listDevices(checkStatus):
+    """
+    Returns a graphical table with devices list
+    @params: checkStatus (boolean) - if True check the device status
+    """
     parser = InventoryParser()
     devs = parser.getDevicesIDHosts()
     groupSearch = parser.getDevicesGroupHost()
