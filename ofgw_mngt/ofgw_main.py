@@ -8,7 +8,7 @@ actions on non-OpenFlow capatible devices.
 """
 
 import sys
-import argparse
+import argcomplete, argparse
 import yaml
 from utils import cuisine
 import texttable as tt
@@ -183,6 +183,7 @@ if __name__ == '__main__':
                     nargs='?',
                     help="Show configurartion group")
 
+    argcomplete.autocomplete(parser)
     args = parser.parse_args()
 
     command = args.command
