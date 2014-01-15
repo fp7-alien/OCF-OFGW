@@ -195,6 +195,7 @@ def run(*args, **kwargs):
 			kwargs.setdefault("sudo", True)
 		return run_local(*args, **kwargs)
 	else:
+		kwargs['quiet'] = True ### This fixes the bug ###
 		if is_sudo():
 			return fabric.api.sudo(*args, **kwargs)
 		else:
@@ -388,12 +389,16 @@ def file_read(location, default=None):
 	with fabric.context_managers.settings(
 		fabric.api.hide('stdout')
 	):
-		frame = run("cat {0} | openssl base64".format(shell_safe((location))))
-		return base64.b64decode(frame)
+		# frame = run("cat {0} | openssl base64".format(shell_safe((location))))
+		# return base64.b64decode(frame)
+		frame = run("cat {0}".format(shell_safe((location))))
+		return frame
 
 def file_exists(location):
 	"""Tests if there is a *remote* file at the given location."""
+	#return run('test -e %s && echo OK ; true' % (shell_safe(location))).endswith("OK")
 	return run('test -e %s && echo OK ; true' % (shell_safe(location))).endswith("OK")
+	#return run(command='test -e ' + location + ' && echo OK', shell=False, quiet=True)
 
 def file_is_file(location):
 	return run("test -f %s && echo OK ; true" % (shell_safe(location))).endswith("OK")
@@ -511,14 +516,18 @@ def file_update(location, updater=lambda x: x):
 	"""
 	assert file_exists(location), "File does not exists: " + location
 	new_content = updater(file_read(location))
-	# assert type(new_content) in (str, unicode, fabric.operations._AttributeString), "Updater must be like (string)->string, got: %s() = %s" %  (updater, type(new_content))
-	run('echo "%s" | openssl base64 -A -d -out %s' % (base64.b64encode(new_content), shell_safe(location)))
+	assert type(new_content) in (str, unicode, fabric.operations._AttributeString), "Updater must be like (string)->string, got: %s() = %s" %  (updater, type(new_content))
+	# run('echo "%s" | openssl base64 -A -d -out %s' % (base64.b64encode(new_content), shell_safe(location)))
+	#print new_content
+	run('echo "%s" > %s' % (new_content, shell_safe(location)))    ### Base64 encoding switched off ###
 
 def file_append(location, content, mode=None, owner=None, group=None):
 	"""Appends the given content to the remote file at the given
 	location, optionally updating its mode/owner/group."""
-	run('echo "%s" | openssl base64 -A -d >> %s' % (base64.b64encode(content), shell_safe(location)))
+	# run('echo "%s" | openssl base64 -A -d >> %s' % (base64.b64encode(content), shell_safe(location)))
+	run('echo "%s"  >> %s' % (content, shell_safe(location)))    ### Base64 encoding switched off ###
 	file_attribs(location, mode, owner, group)
+	return "OK"
 
 def file_unlink(path):
 	if file_exists(path):
