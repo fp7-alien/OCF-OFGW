@@ -518,7 +518,6 @@ def file_update(location, updater=lambda x: x):
 	new_content = updater(file_read(location))
 	assert type(new_content) in (str, unicode, fabric.operations._AttributeString), "Updater must be like (string)->string, got: %s() = %s" %  (updater, type(new_content))
 	# run('echo "%s" | openssl base64 -A -d -out %s' % (base64.b64encode(new_content), shell_safe(location)))
-	#print new_content
 	run('echo "%s" > %s' % (new_content, shell_safe(location)))    ### Base64 encoding switched off ###
 
 def file_append(location, content, mode=None, owner=None, group=None):
