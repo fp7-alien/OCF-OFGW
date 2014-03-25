@@ -1,18 +1,43 @@
 import logging
 import time
 
+import json
+# from pprint import pprint
+
 from daemon import runner
-from flask import Flask, json
+from flask import Flask
+
+# Import example json response from POX
+json_data=open('pox_response.json')
+
+data_of = json.load(json_data)
+json_data.close()
+
+# Import example port status
+json_data=open('port_status.json')
+
+data_port = json.load(json_data)
+json_data.close()
+
+## RESTful service
 app = Flask("ofgw_mngt")
 
+# Raw message from POX
+@app.route('/of-table-raw')
+def get_of_table_raw():
+    return json.dumps(data_of)
+
+# Processed message
 @app.route('/of-table')
 def get_of_table():
-    return json.dumps({'error' : 'no data'})
+    return json.dumps(data_of['result'])
 
-@app.route('/port-satus')
+# Port status
+@app.route('/port-status')
 def get_port_status():
-    return json.dumps({'error' : 'no data'})
+    return json.dumps(data_port)
 
+# Daemon application
 class App():
     
     def __init__(self):
@@ -24,7 +49,6 @@ class App():
             
     def run(self):
         app.run()
-
 
 RESTapp = App()
 logger = logging.getLogger("ofgw-mngt")
