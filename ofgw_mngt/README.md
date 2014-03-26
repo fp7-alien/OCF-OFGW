@@ -147,11 +147,11 @@ GET | <i>/port-status</i> | json |  The port status of the device
 * texttable
 
 The Python dependencies can be installed by the command:
-<i>pip install [name]</i>
+<br /><i>pip install [name]</i>
 
 ###Running
 ####Command Line Interface
-<i>./ofgw_main.py --help</i>i>
+<i>./ofgw_main.py --help</i>
 
 ####RESTful service
 <i>python ./daemon_ofgw_mngt.py [start|stop|restart]</i>
