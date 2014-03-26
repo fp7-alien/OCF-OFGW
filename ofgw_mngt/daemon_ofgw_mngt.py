@@ -2,25 +2,24 @@ import logging
 import time
 
 import json
-# from pprint import pprint
 
 from daemon import runner
 from flask import Flask
 
-# Import example json response from POX
+## Import example json response from POX ##
 json_data=open('pox_response.json')
 
 data_of = json.load(json_data)
 json_data.close()
 
-# Import example port status
+## Import example port status ##
 json_data=open('port_status.json')
 
 data_port = json.load(json_data)
 json_data.close()
 
-## RESTful service
-app = Flask("ofgw_mngt")
+## RESTful service ##
+app = Flask("ofgw-mngt")
 
 # Raw message from POX
 @app.route('/of-table-raw')
@@ -37,7 +36,7 @@ def get_of_table():
 def get_port_status():
     return json.dumps(data_port)
 
-# Daemon application
+## Daemon application ##
 class App():
     
     def __init__(self):
@@ -48,15 +47,19 @@ class App():
         self.pidfile_timeout = 5
             
     def run(self):
+        app.logger.debug('Starting RESTful server')
         app.run()
+
 
 RESTapp = App()
 logger = logging.getLogger("ofgw-mngt")
-logger.setLevel(logging.INFO)
+logger.setLevel(logging.DEBUG)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
+
 handler = logging.FileHandler("/tmp/ofgw_mngt.log")
 handler.setFormatter(formatter)
 logger.addHandler(handler)
+
 
 daemon_runner = runner.DaemonRunner(RESTapp)
 daemon_runner.daemon_context.files_preserve=[handler.stream]
