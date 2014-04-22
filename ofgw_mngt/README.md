@@ -34,7 +34,7 @@ admin users | Show OFELIA users and status
 The inventory database contains configuration files that specifies the hardware groups and specific device mangement interface parameters. The patameters are being used by the hardware group plugin to control and force the user commands. The below snippets presents en example configuration files.
 
 <b>groups.yaml</b>
-```
+```yaml
 groups:
   - name: group1
     required_params:
@@ -53,7 +53,7 @@ groups:
 ```
 
 <b>inventory.conf</b>
-```
+```apacheconf
 [group1]
 id=ID1 host=127.0.0.1
 id=ID2 host=127.0.0.2
@@ -61,6 +61,8 @@ id=ID2 host=127.0.0.2
 [group2]
 id=ID3 host=127.0.0.3
 ```
+
+<span style="background-color: #FFFF00">TODO: Add the description of the configuration files structure.</span>
 
 ###RESTful interface
 The RESTful interface allows the OCF to inform on the current device status thru the TBAM Agent. Below the draft RESTful interface specification is presented.
@@ -141,13 +143,39 @@ GET | <i>/port-status</i> | json |  The port status of the device
 ##INSTALLATION
 
 ###Python dependencies
+* argcomplete
 * flask
-* yaml
-* daemon
+* pyyaml
+* fabric
+* python-daemon
 * texttable
 
-The Python dependencies can be installed by the command:
+The Python dependencies can be installed by the [pip](https://pypi.python.org/pypi/pip) tool:
 <i>pip install [name]</i>
+
+
+### Configuration
+The CLI needs the configuration files (groups.yaml, inventory.conf) in the program's directory to be placed. This project includes the example set of configuration files. Please copy the *.example files with the needed filenames as below.
+<i>cp inventory.conf.example inventory.conf</i>
+<i>cp groups.yaml.example groups.yaml</i>
+
+[OFGW-mngt configuration files](#inventory-database)
+
+### Autocomplete feature for CLI (optional)
+In order to use the autocomplete in CLI please go thru the [<b>argcomplete</b> installation instuction](https://pypi.python.org/pypi/argcomplete).
+
+<b>Basic installation</b>
+```bash
+pip install argcomplete
+activate-global-python-argcomplete
+```
+
+In order of errors insert a line like below into the <i>.bash.rc</i> file in your home directory.
+```bash
+eval "$(register-python-argcomplete my-awesome-script.py)"
+```
+
+Refresh your bash environment (start a new shell or <i>source /etc/profile</i>).
 
 ###Running
 ####Command Line Interface
