@@ -1,3 +1,11 @@
+#!/usr/bin/python
+#-*- coding: utf-8 -*-
+"""
+OFGW Management Module
+This module is a part of OFGW that is an extension to
+OFELIA Control Framework. It contains a RESTful service for getting status of managed devices.
+"""
+
 import logging
 import time
 
