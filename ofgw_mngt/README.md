@@ -53,7 +53,7 @@ groups:
 ```
 
 <b>inventory.conf</b>
-```apacheconf
+```
 [group1]
 id=ID1 host=127.0.0.1
 id=ID2 host=127.0.0.2
@@ -75,7 +75,7 @@ GET | <i>/of-table-raw</i> | json |  The OpenFLow table staus in raw POX control
 GET | <i>/port-status</i> | json |  The port status of the device
 
 <b>Example OpenFlow table response</b>
-```
+```json
 {
   "flowstats": [
     {
@@ -130,7 +130,7 @@ GET | <i>/port-status</i> | json |  The port status of the device
 ```
 
 <b>Example port status response</b>
-```
+```json
 {
   "eth4": "up",
   "eth3": "up",
@@ -150,11 +150,11 @@ GET | <i>/port-status</i> | json |  The port status of the device
 * python-daemon
 * texttable
 
-The Python dependencies can be installed by the [pip](https://pypi.python.org/pypi/pip) tool:
-<i>pip install [name]</i>
-=======
-The Python dependencies can be installed by the command:
-<br /><i>pip install [name]</i>
+The Python dependencies can be installed by the [pip](https://pypi.python.org/pypi/pip) tool.
+
+```shell
+$ pip install [dependency]
+```
 
 ### Configuration
 The CLI needs the configuration files (groups.yaml, inventory.conf) in the program's directory to be placed. This project includes the example set of configuration files. Please copy the *.example files with the needed filenames as below.
@@ -163,13 +163,13 @@ The CLI needs the configuration files (groups.yaml, inventory.conf) in the progr
 
 [OFGW-mngt configuration files](#inventory-database)
 
-### Autocomplete feature for CLI (optional)
+### Autocomplete CLI feature (optional)
 In order to use the autocomplete in CLI please go thru the [<b>argcomplete</b> installation instuction](https://pypi.python.org/pypi/argcomplete).
 
 <b>Basic installation</b>
-```bash
-pip install argcomplete
-activate-global-python-argcomplete
+```shell
+$ pip install argcomplete
+$ activate-global-python-argcomplete
 ```
 
 In order of errors insert a line like below into the <i>.bash.rc</i> file in your home directory.
@@ -181,9 +181,13 @@ Refresh your bash environment (start a new shell or <i>source /etc/profile</i>).
 
 ###Running
 ####Command Line Interface
-<i>./ofgw_main.py --help</i>
+```shell
+$ ./ofgw_main.py --help
+```
 
 ####RESTful service
-<i>python ./daemon_ofgw_mngt.py [start|stop|restart]</i>
+```shell
+$ ./daemon_ofgw_mngt.py [start|stop|restart]
+```
 
 Default HTTP service port: 5000
