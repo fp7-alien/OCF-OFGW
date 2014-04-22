@@ -152,7 +152,9 @@ GET | <i>/port-status</i> | json |  The port status of the device
 
 The Python dependencies can be installed by the [pip](https://pypi.python.org/pypi/pip) tool:
 <i>pip install [name]</i>
-
+=======
+The Python dependencies can be installed by the command:
+<br /><i>pip install [name]</i>
 
 ### Configuration
 The CLI needs the configuration files (groups.yaml, inventory.conf) in the program's directory to be placed. This project includes the example set of configuration files. Please copy the *.example files with the needed filenames as below.
@@ -179,7 +181,7 @@ Refresh your bash environment (start a new shell or <i>source /etc/profile</i>).
 
 ###Running
 ####Command Line Interface
-<i>./ofgw_main.py --help</i>i>
+<i>./ofgw_main.py --help</i>
 
 ####RESTful service
 <i>python ./daemon_ofgw_mngt.py [start|stop|restart]</i>
