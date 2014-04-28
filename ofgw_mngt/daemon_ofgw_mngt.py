@@ -13,6 +13,7 @@ import json
 
 from daemon import runner
 from flask import Flask
+from flask import Response
 
 ## Import example json response from POX ##
 json_data=open('pox_response.json')
@@ -32,17 +33,33 @@ app = Flask("ofgw-mngt")
 # Raw message from POX
 @app.route('/of-table-raw')
 def get_of_table_raw():
-    return json.dumps(data_of)
+    resp = json.dumps(data_of)
+    return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
-# Processed message
+# Processed OF-table dump
 @app.route('/of-table')
 def get_of_table():
-    return json.dumps(data_of['result'])
+    logger.debug('Test')
+    resp = json.dumps(data_of['result'])
+    return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
+
+# OF-table dump filtered by DPID 
+@app.route('/of-table/dpid/<dpid>')
+def show_user_profile(dpid):
+    data = data_of['result']
+    currentDPID = data['dpid']
+    app.logger.info('test')
+    if currentDPID == dpid:
+        resp = json.dumps(data)
+        return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
+    else:
+        return Response(response=None, status=404, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
 # Port status
 @app.route('/port-status')
 def get_port_status():
-    return json.dumps(data_port)
+    resp = json.dumps(data_port)
+    return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
 ## Daemon application ##
 class App():
@@ -55,7 +72,8 @@ class App():
         self.pidfile_timeout = 5
             
     def run(self):
-        app.logger.debug('Starting RESTful server')
+        logger.info('Starting RESTful server')
+        app.debug = False
         app.run()
 
 
