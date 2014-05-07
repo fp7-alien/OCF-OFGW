@@ -13,6 +13,13 @@ import yaml
 from utils import cuisine
 import texttable as tt
 import re
+from plugins import *
+# import imp
+# import os
+# import importlib
+
+ez1 = ez.ez_hw(ip='127.0.0.1')
+# plugins.netfpga.run()
 
 class InventoryParser(object):
     """
