@@ -13,12 +13,14 @@ import yaml
 from utils import cuisine
 import texttable as tt
 import re
+
+# Import hw-specific plugins
 from plugins import *
-# import imp
-# import os
-# import importlib
 
 ez1 = ez.ez_hw(ip='127.0.0.1')
+ez1.reboot()
+ez1.reset()
+ez1.showPorts()
 # plugins.netfpga.run()
 
 class InventoryParser(object):
