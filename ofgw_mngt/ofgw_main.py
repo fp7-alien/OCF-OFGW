@@ -3,8 +3,8 @@
 """
 OFGW Management Module
 This module is a part of OFGW that is an extension to
-OFELIA Control Framework. It contains CLI tool for providing management
-actions on non-OpenFlow capatible devices.
+OFELIA Control Framework. It implements CLI tool for providing management
+actions on non-OpenFlow capable devices.
 """
 
 import sys
@@ -16,12 +16,6 @@ import re
 
 # Import hw-specific plugins
 from plugins import *
-
-ez1 = ez.ez_hw(ip='127.0.0.1')
-ez1.reboot()
-ez1.reset()
-ez1.showPorts()
-# plugins.netfpga.run()
 
 class InventoryParser(object):
     """
@@ -119,6 +113,16 @@ class InventoryParser(object):
                     deviceIDHost.append(paramPair)
         return deviceIDHost
 
+    def getDevicesConcreteIDHosts(self, listIDHost=None, id=None):
+        """
+        Returns: Host
+        @params: listIDHost (list) - list [{ID:Host}]
+                 id (str) - hardware ID
+        """
+        for host in listIDHost:
+            if id in host.keys():
+                return host[id]
+
 
 def parseGroupConfig(groups_conf="./groups.yaml"):
     """
@@ -128,9 +132,13 @@ def parseGroupConfig(groups_conf="./groups.yaml"):
     return yaml.load(conf_invent)
 
 ### TODO: Fill functions
-def showPorts():
+def showPorts(id):
     print "\nPort status\n-----------"
     print "TODO\n"
+    hosts = config.getDevicesIDHosts()
+    ip = config.getDevicesConcreteIDHosts(hosts, id)
+    ez1 = ez.ez_hw(ip)
+    ez1.showPorts()
 
 def showOF():
     print "\nOpenFlow configuration\n-------------------"
@@ -151,10 +159,9 @@ def showSummary():
 
 def showConfig():
     print "\nGroup configuration\n------------------"
-    print parseGroupConfig()
+    print groups_config
     print "\nHost parameters configuration\n---------------------------"
-    parser = InventoryParser()
-    print parser.getParams()
+    print config.getParams()
     print "\n"
     
 
@@ -168,9 +175,8 @@ def listDevices(checkStatus):
     Returns a graphical table with devices list
     @params: checkStatus (boolean) - if True check the device status
     """
-    parser = InventoryParser()
-    devs = parser.getDevicesIDHosts()
-    groupSearch = parser.getDevicesGroupHost()
+    devs = config.getDevicesIDHosts()
+    groupSearch = config.getDevicesGroupHost()
     cuisine.mode_local()
     tab = tt.Texttable()
 
@@ -214,6 +220,10 @@ def listDevices(checkStatus):
 
 
 if __name__ == '__main__':
+    # plugins.netfpga.run()
+    config = InventoryParser()
+    groups_config = parseGroupConfig()
+
     parser = argparse.ArgumentParser(description="OFGW management script")
 
     subparsers = parser.add_subparsers(help='Management command', dest="command")
@@ -272,22 +282,24 @@ if __name__ == '__main__':
 
     elif command == "reboot":
         print "Device reboot initialized...\n"
+        ez1.reboot()
         # TODO: add reboot function
 
     elif command == "fact-reset":
         print "Reset device to factory setting initialized...\n"
+        ez1.reset()
         # TODO: add factory reset function
 
     elif command == "show":
         print "Getting data from device...\n"
         if args.all:
-            showPorts()
+            showPorts(args.DEVICE_ID)
             showOF()
             showTables()
             showNeighbors()
 
         elif args.ports:
-            showPorts()
+            showPorts(args.DEVICE_ID)
 
         elif args.of:
             showOF()
