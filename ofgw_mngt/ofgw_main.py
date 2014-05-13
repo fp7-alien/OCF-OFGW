@@ -132,6 +132,19 @@ def parseGroupConfig(groups_conf="./groups.yaml"):
     return yaml.load(conf_invent)
 
 ### TODO: Fill functions
+### TODO: Add ID->GROUP mapping [# TODO-6]
+def reboot(id):
+    hosts = config.getDevicesIDHosts()
+    ip = config.getDevicesConcreteIDHosts(hosts, id)
+    hw = ez.ez_hw(ip) # TODO-6
+    hw.reboot()
+
+def reset(id):
+    hosts = config.getDevicesIDHosts()
+    ip = config.getDevicesConcreteIDHosts(hosts, id)
+    hw = ez.ez_hw(ip) # TODO-6
+    hw.reset()
+
 def showPorts(id):
     print "\nPort status\n-----------"
     print "TODO\n"
@@ -282,13 +295,11 @@ if __name__ == '__main__':
 
     elif command == "reboot":
         print "Device reboot initialized...\n"
-        ez1.reboot()
-        # TODO: add reboot function
+        reboot(args.DEVICE_ID)
 
     elif command == "fact-reset":
         print "Reset device to factory setting initialized...\n"
-        ez1.reset()
-        # TODO: add factory reset function
+        reset(args.DEVICE_ID)
 
     elif command == "show":
         print "Getting data from device...\n"
