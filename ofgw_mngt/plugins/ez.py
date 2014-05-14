@@ -1,7 +1,7 @@
 from utils import cuisine
 from utils.remote import remote
    
-class ez_hw:
+class hwConfig:
     def __init__(self, ip):
         self.ip = ip
         print "EZ obj created"

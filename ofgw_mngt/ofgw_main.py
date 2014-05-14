@@ -113,15 +113,25 @@ class InventoryParser(object):
                     deviceIDHost.append(paramPair)
         return deviceIDHost
 
-    def getDevicesConcreteIDHosts(self, listIDHost=None, id=None):
+    def getDevicesConcreteIDHosts(self, id=None):
         """
         Returns: Host
         @params: listIDHost (list) - list [{ID:Host}]
                  id (str) - hardware ID
         """
+        listIDHost = self.getDevicesIDHosts()
         for host in listIDHost:
             if id in host.keys():
                 return host[id]
+
+    def getDevicesConcreteGroupHost(self, host=None):
+        """
+        Returns: Host
+        @params: listIDHost (list) - list [{ID:Host}]
+                 id (str) - hardware ID
+        """
+        listGroupHost = self.getDevicesGroupHost()
+        return listGroupHost[host]
 
 
 def parseGroupConfig(groups_conf="./groups.yaml"):
@@ -131,27 +141,29 @@ def parseGroupConfig(groups_conf="./groups.yaml"):
     conf_invent = open(groups_conf, 'r')
     return yaml.load(conf_invent)
 
+### TODO: Add values validation
+def plugin(f):
+    def new_f(id):
+        print "Entering", f.__name__
+        ip = config.getDevicesConcreteIDHosts(id)
+        hwGroup = config.getDevicesConcreteGroupHost(ip)
+        hwGroup = globals()[hwGroup]
+        hw = hwGroup.hwConfig(ip)
+        print "Exited", f.__name__
+    return new_f
+
 ### TODO: Fill functions
-### TODO: Add ID->GROUP mapping [# TODO-6]
+@plugin
 def reboot(id):
-    hosts = config.getDevicesIDHosts()
-    ip = config.getDevicesConcreteIDHosts(hosts, id)
-    hw = ez.ez_hw(ip) # TODO-6
     hw.reboot()
 
+@plugin
 def reset(id):
-    hosts = config.getDevicesIDHosts()
-    ip = config.getDevicesConcreteIDHosts(hosts, id)
-    hw = ez.ez_hw(ip) # TODO-6
     hw.reset()
 
+@plugin
 def showPorts(id):
-    print "\nPort status\n-----------"
-    print "TODO\n"
-    hosts = config.getDevicesIDHosts()
-    ip = config.getDevicesConcreteIDHosts(hosts, id)
-    ez1 = ez.ez_hw(ip)
-    ez1.showPorts()
+    hw.showPorts()
 
 def showOF():
     print "\nOpenFlow configuration\n-------------------"
