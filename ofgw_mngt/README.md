@@ -156,6 +156,11 @@ The Python dependencies can be installed by the [pip](https://pypi.python.org/py
 $ pip install [dependency]
 ```
 
+The project includes ``PYTHON_REQUIREMENTS`` file that contains a list of tested and working versions of the required Python modules. A command to install the suggested versions of the Python requirements:
+```shell
+$ pip install -r PYTHON_REQUIREMENTS
+```
+
 ### Configuration
 The CLI needs the configuration files (groups.yaml, inventory.conf) in the program's directory to be placed. This project includes the example set of configuration files. Please copy the *.example files with the needed filenames as below.
 <i>cp inventory.conf.example inventory.conf</i>
