@@ -126,9 +126,8 @@ class InventoryParser(object):
 
     def getDevicesConcreteGroupHost(self, host=None):
         """
-        Returns: Host
-        @params: listIDHost (list) - list [{ID:Host}]
-                 id (str) - hardware ID
+        Returns: Group
+        @params: Host (str) - Host IP
         """
         listGroupHost = self.getDevicesGroupHost()
         return listGroupHost[host]
@@ -143,6 +142,12 @@ def parseGroupConfig(groups_conf="./groups.yaml"):
 
 ### TODO: Add values validation
 def plugin(f):
+    """
+    Decorator for hw plugin
+    It recognizes the proper plugin depending
+    on the inventory configuration, groups configuration
+    and specific hardware ID
+    """
     def new_f(id):
         print "Entering", f.__name__
         ip = config.getDevicesConcreteIDHosts(id)
@@ -190,10 +195,21 @@ def showConfig():
     print "\n"
     
 
-# TODO: Fill this when user db declared
 def showUsers():
+    cuisine.mode_local()
+    tab = tt.Texttable()
     print "\nUsers\n-----"
-    print "TODO\n"
+    CMD = "cat /etc/passwd | grep \"/home\" | grep -v \"false\" |cut -d: -f1"
+    users = cuisine.run_local(CMD)
+
+    header = ['User', 'Active experiment']
+    tab.header(header)
+
+    for user in users.split("\n"):
+        row = [user, 'No']  #TODO: Add active experiment status
+        tab.add_row(row)
+    s = tab.draw()
+    print s
 
 def listDevices(checkStatus):
     """

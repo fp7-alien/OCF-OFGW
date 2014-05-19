@@ -26,4 +26,4 @@ class hwConfig:
         return CMD
 
     def __call__(self):
-        print "RUNNING!!!!"
+        print "Calling plugin function"
