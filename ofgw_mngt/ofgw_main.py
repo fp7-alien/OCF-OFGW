@@ -124,6 +124,22 @@ class InventoryParser(object):
             if id in host.keys():
                 return host[id]
 
+    def getDevicesParam(self, id=None, param=None):
+        """
+        Returns: {Params}
+        @params: id (str) - hardware ID
+        """
+        params = {}
+        for group in self.params:
+            for param_test in self.params[group]:
+                for param_conc in param_test:
+                    if 'id' in param_conc and id in param_conc['id']:
+                        params = param_test
+        for param_i in params:
+            if param in param_i:
+                return param_i[param]
+
+
     def getDevicesConcreteGroupHost(self, host=None):
         """
         Returns: Group
@@ -171,7 +187,7 @@ def plugin(f):
         ip = config.getDevicesConcreteIDHosts(id)
         hwGroup = config.getDevicesConcreteGroupHost(ip)
         hwGroup = globals()[hwGroup]
-        hw = hwGroup.hwConfig(ip, config)
+        hw = hwGroup.hwConfig(ip, config, id)
         print "Exited", f.__name__
     return new_f
 
@@ -186,7 +202,7 @@ def reset(id):
 
 @plugin
 def showPorts(id):
-    hw.showPorts()
+    print hw.showPorts(id)
 
 def showOF():
     print "\nOpenFlow configuration\n-------------------"

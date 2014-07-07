@@ -2,15 +2,16 @@ from utils import cuisine
 from utils.remote import remote
    
 class hwConfig:
-    def __init__(self, ip, config):
+    def __init__(self, ip, config, id):
         self.ip = ip
         self.config = config
-        print config
+        self.id = id
         print "EZ obj created"
         print "IP: " + self.ip
-        cuisine.connect(ip, user="root")
-        result = cuisine.run("uname -a")
-        print "Result:%s" %result
+        login = config.getDevicesParam(id=self.id, param='login')
+        cuisine.connect(ip, user=login)
+        # result = cuisine.run("uname -a")
+        # print "Result:%s" %result
 
     @remote
     def reboot(self):
