@@ -69,10 +69,13 @@ The RESTful interface allows the OCF to inform on the current device status thru
 
 Method | Url | Response | Description
 --- | --- | --- | ---
-GET | <i>/of-table</i> | json | The OpenFlow table (all devices)
-GET | <i>/of-table/{DPID}</i> | json | The OpenFlow table (specific DPID)
-GET | <i>/of-table-raw</i> | json |  The OpenFLow table staus in raw POX controller formatting
-GET | <i>/port-status</i> | json |  The port status of the device
+GET | <i>/api/help</i> | json | Available REST methods
+GET | <i>/of-table</i> | json | OpenFlow table (all devices)
+GET | <i>/of-table/{DPID}</i> | json | OpenFlow table (specific DPID)
+GET | <i>/of-table-raw</i> | json |   OpenFLow table staus in raw POX controller formatting
+GET | <i>/hosts</i> | json |  List of devices under OCF control
+GET | <i>/port-status/id/{ID}</i> | json |  Device's port status
+GET | <i>/neighbors/id/{ID}</i> | json |  Device's neighbors
 
 <b>Example OpenFlow table response</b>
 ```json

@@ -8,12 +8,15 @@ OFELIA Control Framework. It contains a RESTful service for getting status of ma
 
 import logging
 import time
-
 import json
 
+from flask import Flask, jsonify, Response
+
 from daemon import runner
-from flask import Flask
-from flask import Response
+from ofgw_main import InventoryParser
+
+## Open OFGW MG configuration
+config = InventoryParser()
 
 ## Import example json response from POX ##
 json_data=open('pox_response.json')
@@ -30,36 +33,60 @@ json_data.close()
 ## RESTful service ##
 app = Flask("ofgw-mngt")
 
-# Raw message from POX
+
+@app.route('/api/help', methods = ['GET'])
+def help():
+    """Print available functions."""
+    func_list = {}
+    for rule in app.url_map.iter_rules():
+        if rule.endpoint != 'static':
+            func_list[rule.rule] = app.view_functions[rule.endpoint].__doc__
+    return jsonify(func_list)
+
 @app.route('/of-table-raw')
 def get_of_table_raw():
+    """Raw message from POX"""
     resp = json.dumps(data_of)
     return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
-# Processed OF-table dump
 @app.route('/of-table')
 def get_of_table():
-    logger.debug('Test')
+    """Processed OF-table dump"""
     resp = json.dumps(data_of['result'])
     return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
-# OF-table dump filtered by DPID 
 @app.route('/of-table/dpid/<dpid>')
 def show_user_profile(dpid):
+    """OF-table dump filtered by DPID"""
     data = data_of['result']
     currentDPID = data['dpid']
-    app.logger.info('test')
     if currentDPID == dpid:
         resp = json.dumps(data)
         return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
     else:
         return Response(response=None, status=404, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
-# Port status
-@app.route('/port-status')
-def get_port_status():
+@app.route('/port-status/id/<id>')
+def get_port_status(id):
+    """Port status"""
     resp = json.dumps(data_port)
     return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
+
+@app.route('/hosts')
+def get_hosts():
+    """Get hosts under OCF control"""
+    hosts = config.getDevicesIDHosts()
+    resp = json.dumps(hosts)
+    return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
+
+@app.route('/neighbors/id/<id>')
+def get_neighbors(id):
+    """Get neighbors of selected ID device"""
+    neighbors = config.getNeighbors(id)
+    resp = json.dumps(neighbors)
+    return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
+
+
 
 ## Daemon application ##
 class App():
@@ -72,7 +99,7 @@ class App():
         self.pidfile_timeout = 5
             
     def run(self):
-        logger.info('Starting RESTful server')
+        # logger.info('Starting RESTful server')
         app.debug = False
         app.run()
 

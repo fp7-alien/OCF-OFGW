@@ -132,6 +132,24 @@ class InventoryParser(object):
         listGroupHost = self.getDevicesGroupHost()
         return listGroupHost[host]
 
+    def getNeighbors(self, id=None):
+        """
+        Returns: Neighbors
+        @params: id (str) - hardware ID
+        UGLY coding
+        """
+        neighbors = []
+        for group in self.params:
+            for param in self.params[group]:
+                for paramSpec in param:
+                    if 'id' in paramSpec:
+                        if id in paramSpec['id']:
+                            for paramSpec in param:
+                                if 'neighbors' in paramSpec:
+                                    for single_neighbor in paramSpec['neighbors'].split(';'):
+                                        neighbors.append(single_neighbor)
+        return neighbors
+
 
 def parseGroupConfig(groups_conf="./groups.yaml"):
     """
@@ -153,7 +171,7 @@ def plugin(f):
         ip = config.getDevicesConcreteIDHosts(id)
         hwGroup = config.getDevicesConcreteGroupHost(ip)
         hwGroup = globals()[hwGroup]
-        hw = hwGroup.hwConfig(ip)
+        hw = hwGroup.hwConfig(ip, config)
         print "Exited", f.__name__
     return new_f
 
@@ -178,9 +196,9 @@ def showTables():
     print "\nOpenFlow tables\n---------------"
     print "TODO\n"
 
-def showNeighbors():
+def showNeighbors(id):
     print "\nDevice neighbors\n----------------"
-    print "TODO\n"
+    print config.getNeighbors(id)
 
 def showSummary():
     print "\nDevice summary\n--------------"
@@ -347,7 +365,7 @@ if __name__ == '__main__':
             showTables()
 
         elif args.neighbors:
-            showNeighbors()
+            showNeighbors(args.DEVICE_ID)
 
         else:
             showSummary()
