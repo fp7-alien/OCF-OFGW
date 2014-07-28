@@ -7,9 +7,9 @@ from SecureXMLRPCServerOriginal import SecureXMLRPCServerOriginal
 from time import sleep
 
 
-SERVER_KEY_PATH = "/root/AlienAM/.gcf/ch-key.pem"
-SERVER_CERT_PATH =  "/root/AlienAM/.gcf/ch-cert.pem"
-TRUSTED_CERT_PATH = "/root/AlienAM/.gcf/trusted_roots/ch-cert.pem"
+SERVER_KEY_PATH = "/root/.gcf/ch-key.pem"
+SERVER_CERT_PATH =  "/root/.gcf/ch-cert.pem"
+TRUSTED_CERT_PATH = "/root/.gcf/trusted_roots/ch-cert.pem"
 
 SERVER_ADDRESS = "127.0.0.1"
 SERVER_PORT = 8234
@@ -118,15 +118,14 @@ def main():
             os.system('ovs-ofctl add-flow switch "priority=0, actions=drop"')     
             return True
         
-        def setUserAuth(self, ssh_pub_client_cert):
+        def setUserAuth(self, projectInfo):
             #TODO: Actually we do not know the format of the certificate or certificates.
-
-            
+            print projectInfo
             return True
         
-        def remUserAuth(self, ssh_pub_client_cert):
+        def remUserAuth(self, projectInfo):
             #TODO: Actually we do not know the format of the certificate or certificates.
-
+            print projectInfo
             return True
     
     
