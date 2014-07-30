@@ -70,7 +70,7 @@ def main():
             return True
         
         def remTCPProxy(self, controller):
-            
+
             present = True;
             while(present):
                 #p = subprocess.Popen("ls", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -84,12 +84,12 @@ def main():
             while(present):
                 p = subprocess.Popen('iptables -t nat --check POSTROUTING -j MASQUERADE', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 out, error = p.communicate()
-                if(not error):    
+                if(not error):
                     os.system("iptables -t nat -D POSTROUTING -j MASQUERADE")
                 else:
                     present = False
-            
-            os.system("conntrack -D -p tcp --dport 6633 --dst-nat %s" %(controller))
+
+            os.system("conntrack -D -p tcp --dport 6633 --dst-nat %s" %(controller.split(":")[0]))
             return True
         
         def setOvS(self, VLANs):
@@ -99,7 +99,7 @@ def main():
             #VLANs = {"10" : "0xffff", "30" : "20"}
             for key,value in VLANs.iteritems():
                 #If vlan value is not defined, the VLAN mapping is not configured!
-                if(key and value):
+                if(key and value and key != "-1"):
                     #The in_port = 2 is connected to ALIEN island, the in_port = 3 is connected to OFELIA island
                     if(value == "0xffff"):
                         #From OFELIA to ALIEN
@@ -115,7 +115,7 @@ def main():
             #VLANs = {"10" : "0xffff", "30" : "20"}
             
             for key,value in VLANs.iteritems():
-                if(key and value):
+                if(key and value and key != "-1"):
                     os.system("ovs-ofctl del-flows switch dl_vlan=%s"%(str(key)))
                     os.system("ovs-ofctl del-flows switch dl_vlan=%s"%(str(value)))
             #Drop rule always present   
