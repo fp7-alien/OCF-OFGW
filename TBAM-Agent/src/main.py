@@ -7,9 +7,9 @@ from SecureXMLRPCServerOriginal import SecureXMLRPCServerOriginal
 from time import sleep
 
 
-SERVER_KEY_PATH = "/root/.gcf/ch-key.pem"
-SERVER_CERT_PATH =  "/root/.gcf/ch-cert.pem"
-TRUSTED_CERT_PATH = "/root/.gcf/trusted_roots/ch-cert.pem"
+SERVER_KEY_PATH = "../certs/ch-key.pem"
+SERVER_CERT_PATH =  "../certs/ch-cert.pem"
+TRUSTED_CERT_PATH = "../certs/trusted_roots/ch-cert.pem"
 
 SERVER_ADDRESS = "127.0.0.1"
 SERVER_PORT = 8234
