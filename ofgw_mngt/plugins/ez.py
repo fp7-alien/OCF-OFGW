@@ -1,7 +1,16 @@
 from utils import cuisine
-from utils.remote import remote
-   
-class hwConfig:
+# from utils.remote import remote
+
+def remote(f):
+    def new_f(cmd):
+        print "Entering", f.__name__
+        cmd=f(cmd)
+        result = cuisine.run(cmd)
+        print "Result:%s" %result
+        print "Exited", f.__name__
+    return new_f
+
+class hwConfig():
     def __init__(self, ip, config, id):
         self.ip = ip
         self.config = config
@@ -9,13 +18,16 @@ class hwConfig:
         print "EZ obj created"
         print "IP: " + self.ip
         login = config.getDevicesParam(id=self.id, param='login')
-        cuisine.connect(ip, user=login)
+        cuisine.connect(self.ip, user=login)
+        # cuisine.mode_remote()
         # result = cuisine.run("uname -a")
-        # print "Result:%s" %result
+        result = cuisine.run("ifconfig")
+        print "Result:%s" %result
 
     @remote
     def reboot(self):
         CMD = "Xreboot now"
+        return CMD
         
 
     @remote
@@ -25,8 +37,11 @@ class hwConfig:
 
     @remote
     def showPorts(self):
-        CMD = "ifconfig"
+        CMD="ifconfig"
         return CMD
 
-    def __call__(self):
-        print "Calling plugin function"
+
+    # def __call__(self):
+    #     print "Calling plugin function"
+
+

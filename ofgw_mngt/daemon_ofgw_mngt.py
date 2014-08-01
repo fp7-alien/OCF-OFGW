@@ -11,6 +11,7 @@ import time
 import json
 
 from flask import Flask, jsonify, Response
+import yaml
 
 from daemon import runner
 from ofgw_main import InventoryParser
@@ -29,6 +30,12 @@ json_data=open('port_status.json')
 
 data_port = json.load(json_data)
 json_data.close()
+
+# Neighbors test - DELETE IT
+f_neighbors = open("./neighbors.yaml", 'r')
+neighbors = yaml.load(f_neighbors)
+f_neighbors.close()
+
 
 ## RESTful service ##
 app = Flask("ofgw-mngt")
@@ -79,14 +86,31 @@ def get_hosts():
     resp = json.dumps(hosts)
     return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
-@app.route('/neighbors/id/<id>')
-def get_neighbors(id):
-    """Get neighbors of selected ID device"""
-    neighbors = config.getNeighbors(id)
+@app.route('/neighbors')
+def get_neighbors():
+    """Get all devices' neighbors"""
     resp = json.dumps(neighbors)
     return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
+@app.route('/neighbors/dpid/<dpid>')
+def get_concrete_neighbors(dpid):
+    """Get concrete device neighbors specified by 'dpid' parameter"""
+    for device in neighbors:
+        c_dpid = neighbors[device]['dpid']
+        if dpid in c_dpid:
+            resp = json.dumps(neighbors[device]['ports'])
+            return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
+    return Response(response=None, status=404, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
+@app.route('/neighbors/id/<id>')
+def get_concrete_neighbors_id(id):
+    """Get concrete device neighbors specified by 'id' parameter"""
+    for device in neighbors:
+        # c_id = neighbors[device]['id']
+        if id in device:
+            resp = json.dumps(neighbors[device]['ports'])
+            return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
+    return Response(response="{'not found'}", status=404, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
 ## Daemon application ##
 class App():

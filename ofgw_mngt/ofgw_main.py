@@ -187,30 +187,32 @@ def plugin(f):
         ip = config.getDevicesConcreteIDHosts(id)
         hwGroup = config.getDevicesConcreteGroupHost(ip)
         hwGroup = globals()[hwGroup]
-        hw = hwGroup.hwConfig(ip, config, id)
+        hw = hwGroup.hwConfig(ip=ip, config=config, id=id)
         print "Exited", f.__name__
     return new_f
 
+
 ### TODO: Fill functions
-@plugin
+# @plugin
 def reboot(id):
     hw.reboot()
 
-@plugin
+# @plugin
 def reset(id):
     hw.reset()
 
 @plugin
 def showPorts(id):
-    print hw.showPorts(id)
+    hw.showPortscc()
+    pass
 
 def showOF():
     print "\nOpenFlow configuration\n-------------------"
-    print "TODO\n"
+    # print "TODO\n"
 
 def showTables():
     print "\nOpenFlow tables\n---------------"
-    print "TODO\n"
+    # print "TODO\n"
 
 def showNeighbors(id):
     print "\nDevice neighbors\n----------------"
@@ -230,17 +232,30 @@ def showConfig():
     
 
 def showUsers():
+    ### Read policy configuration
+    policy_f = open('policy.yaml', 'r')
+    policy_conf = yaml.load(policy_f)
+    print policy_conf
+
     cuisine.mode_local()
     tab = tt.Texttable()
     print "\nUsers\n-----"
     CMD = "cat /etc/passwd | grep \"/home\" | grep -v \"false\" |cut -d: -f1"
     users = cuisine.run_local(CMD)
 
-    header = ['User', 'Active experiment']
+    header = ['User', 'Active experiment', 'Admin privileges']
     tab.header(header)
 
     for user in users.split("\n"):
-        row = [user, 'No']  #TODO: Add active experiment status
+        if user in policy_conf['active_users']:
+            active = 'Yes'
+        else:
+            active = 'No'
+        if user in policy_conf['admins']:
+            admin = 'Yes'
+        else:
+            admin = 'No'
+        row = [user, active, admin]  #TODO: Add active experiment status
         tab.add_row(row)
     s = tab.draw()
     print s
