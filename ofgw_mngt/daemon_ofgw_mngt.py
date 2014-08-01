@@ -31,10 +31,10 @@ json_data=open('port_status.json')
 data_port = json.load(json_data)
 json_data.close()
 
-# Neighbors test - DELETE IT
-f_neighbors = open("./neighbors.yaml", 'r')
-neighbors = yaml.load(f_neighbors)
-f_neighbors.close()
+# Neighbours configuration  file
+f_neighbours = open("./neighbours.yaml", 'r')
+neighbours = yaml.load(f_neighbours)
+f_neighbours.close()
 
 
 ## RESTful service ##
@@ -86,31 +86,30 @@ def get_hosts():
     resp = json.dumps(hosts)
     return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
-@app.route('/neighbors')
-def get_neighbors():
-    """Get all devices' neighbors"""
-    resp = json.dumps(neighbors)
+@app.route('/neighbours')
+def get_neighbours():
+    """Get all devices' neighbours"""
+    resp = json.dumps(neighbours)
     return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
-@app.route('/neighbors/dpid/<dpid>')
-def get_concrete_neighbors(dpid):
-    """Get concrete device neighbors specified by 'dpid' parameter"""
-    for device in neighbors:
-        c_dpid = neighbors[device]['dpid']
+@app.route('/neighbours/dpid/<dpid>')
+def get_concrete_neighbours(dpid):
+    """Get concrete device neighbours specified by 'dpid' parameter"""
+    for device in neighbours:
+        c_dpid = neighbours[device]['dpid']
         if dpid in c_dpid:
-            resp = json.dumps(neighbors[device]['ports'])
+            resp = json.dumps(neighbours[device]['ports'])
             return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
     return Response(response=None, status=404, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
-@app.route('/neighbors/id/<id>')
-def get_concrete_neighbors_id(id):
-    """Get concrete device neighbors specified by 'id' parameter"""
-    for device in neighbors:
-        # c_id = neighbors[device]['id']
+@app.route('/neighbours/id/<id>')
+def get_concrete_neighbours_id(id):
+    """Get concrete device neighbours specified by 'id' parameter"""
+    for device in neighbours:
         if id in device:
-            resp = json.dumps(neighbors[device]['ports'])
+            resp = json.dumps(neighbours[device]['ports'])
             return Response(response=resp, status=None, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
-    return Response(response="{'not found'}", status=404, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
+    return Response(response=None, status=404, headers=None, mimetype='application/json', content_type=None, direct_passthrough=False)
 
 ## Daemon application ##
 class App():
