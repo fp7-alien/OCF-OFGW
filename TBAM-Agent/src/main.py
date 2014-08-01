@@ -7,12 +7,15 @@ from SecureXMLRPCServerOriginal import SecureXMLRPCServerOriginal
 from time import sleep
 
 
-SERVER_KEY_PATH = "/root/AlienAM/.gcf/ch-key.pem"
-SERVER_CERT_PATH =  "/root/AlienAM/.gcf/ch-cert.pem"
-TRUSTED_CERT_PATH = "/root/AlienAM/.gcf/trusted_roots/ch-cert.pem"
+SERVER_KEY_PATH = "/root/.gcf/ch-key.pem"
+SERVER_CERT_PATH =  "/root/.gcf/ch-cert.pem"
+TRUSTED_CERT_PATH = "/root/.gcf/trusted_roots/ch-cert.pem"
 
 SERVER_ADDRESS = "127.0.0.1"
 SERVER_PORT = 8234
+
+ACCESS_CONF_FILE = '/etc/security/access.conf'
+
 
 class RPCServer(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
@@ -45,14 +48,14 @@ def main():
             self.python_string = string
             
         def getSws(self):
-            #TODO: this call needs to retrieve information through the MGNT (not yet implemented) 
+            #TODO: this call needs to retrieve information through the MGMT (not yet implemented) 
             sws = []
             sws.append({"dipd" : "00:00:00:00:00:00:00"})
             sws.append({"dipd" : "00:00:00:00:00:00:01"})
             return sws
         
         def getLinks(self):
-            #TODO: this call needs to retrieve information through the MGN (not yet implemented)
+            #TODO: this call needs to retrieve information through the MGMT (not yet implemented)
             array = []
             array.append(Links(dpidSrc = "00:00:00:00:00:00:00", portSrc="5", dpidDst="00:00:00:00:00:00:01", portDst="1"))
             array.append(Links(dpidSrc = "00:00:00:00:00:00:01", portSrc="10", dpidDst="00:00:00:00:00:00:02", portDst="4"))
@@ -67,7 +70,7 @@ def main():
             return True
         
         def remTCPProxy(self, controller):
-            
+
             present = True;
             while(present):
                 #p = subprocess.Popen("ls", stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -81,12 +84,12 @@ def main():
             while(present):
                 p = subprocess.Popen('iptables -t nat --check POSTROUTING -j MASQUERADE', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 out, error = p.communicate()
-                if(not error):    
+                if(not error):
                     os.system("iptables -t nat -D POSTROUTING -j MASQUERADE")
                 else:
                     present = False
-            
-            os.system("conntrack -D -p tcp --dport 6633 --dst-nat %s" %(controller))
+
+            os.system("conntrack -D -p tcp --dport 6633 --dst-nat %s" %(controller.split(":")[0]))
             return True
         
         def setOvS(self, VLANs):
@@ -96,7 +99,8 @@ def main():
             #VLANs = {"10" : "0xffff", "30" : "20"}
             for key,value in VLANs.iteritems():
                 #If vlan value is not defined, the VLAN mapping is not configured!
-                if(key or value):
+                if(key and value and key != "-1"):
+                    #The in_port = 2 is connected to ALIEN island, the in_port = 3 is connected to OFELIA island
                     if(value == "0xffff"):
                         #From OFELIA to ALIEN
                         os.system('ovs-ofctl add-flow switch "in_port=3, dl_vlan=%s, actions= strip_vlan, output:2"' %(str(key)))
@@ -111,22 +115,53 @@ def main():
             #VLANs = {"10" : "0xffff", "30" : "20"}
             
             for key,value in VLANs.iteritems():
-                if(key or value):
+                if(key and value and key != "-1"):
                     os.system("ovs-ofctl del-flows switch dl_vlan=%s"%(str(key)))
                     os.system("ovs-ofctl del-flows switch dl_vlan=%s"%(str(value)))
             #Drop rule always present   
             os.system('ovs-ofctl add-flow switch "priority=0, actions=drop"')     
             return True
         
-        def setUserAuth(self, ssh_pub_client_cert):
-            #TODO: Actually we do not know the format of the certificate or certificates.
-
+        def setUserAuth(self, projectInfo):
+            first_rule = '+ : ALL : LOCAL\n'
+            second_rule = '+ : @proj_'+projectInfo+' : ALL\n'
+            last_rule = '- : ALL EXCEPT root login:ALL EXCEPT LOCAL\n'
             
+            f = open(ACCESS_CONF_FILE, 'r')
+            lines = f.readlines()
+            f.close()
+            
+            for line in lines:
+                if line == last_rule:
+                    open(ACCESS_CONF_FILE, 'w').writelines(lines[:-3])
+            
+            f = open(ACCESS_CONF_FILE, 'a')
+            f.write(first_rule)
+            f.write(second_rule)
+            f.write(last_rule)
+            
+            f.close()
             return True
         
-        def remUserAuth(self, ssh_pub_client_cert):
-            #TODO: Actually we do not know the format of the certificate or certificates.
-
+        def remUserAuth(self, projectInfo):
+            first_rule = '+ : ALL : LOCAL\n'
+            second_rule = '\n'
+            last_rule = '- : ALL EXCEPT root login:ALL EXCEPT LOCAL\n'
+            
+            f = open(ACCESS_CONF_FILE, 'r')
+            lines = f.readlines()
+            f.close()
+            
+            for line in lines:
+                if line == last_rule:
+                    open(ACCESS_CONF_FILE, 'w').writelines(lines[:-3])
+            
+            f = open(ACCESS_CONF_FILE, 'a')
+            f.write(first_rule)
+            f.write(second_rule)
+            f.write(last_rule)
+            
+            f.close()
             return True
     
     
