@@ -18,7 +18,7 @@ SERVER_PORT = 8234
 
 ACCESS_CONF_FILE = '/etc/security/access.conf'
 
-CONN_WITH_MGMT = True
+CONN_WITH_MGMT = False
 
 class RPCServer(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)

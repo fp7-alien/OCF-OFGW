@@ -2,7 +2,7 @@
 The TBAM Agent is a daemon running on the OpenFlow Gateway (OFGW) and is responsible for the configuration Management Plane, Control Plane and Data Plane. Regarding the Management plane, TBAM Agent permits not only to manage the configuration of the network devices, but also to retrieve the information of the forwarding plane thanks to pre-defined functionalities exposed by the Management plane. Moreover, the OFGW is in-charge of redirecting the Control traffic to the user controller and handling the data traffic from and to OFELIA islands. Consequently, TBAM Agent provides the configuration also of Control and Data Plane. The architecture of the OFGW is summarized in bottom port of [figure](https://wiki.man.poznan.pl/alien/img_auth.php/a/a4/Work_distribution.png).
 
 
-###Data Plane: OpenvSwitch
+##Data Plane: OpenvSwitch
 
 The aim of the Data Plane module is to guarantee the connection between ALIEN and OFELIA. In particular the Data Plane provides the translation between the ALIEN VLANs and the OFELIA VLANs. 
 
@@ -15,7 +15,7 @@ setOvs(VLANs) and remOvs(VLANs) respectively add or remove the flows entry in th
 This process of swapping the VLAN needs a priori information on the correct VLAN mapping configurations. The basic idea is to provide through the GUI the choice of the VLANs used in the ALIEN island. Every single ALIEN VLAN ID must be mapped to one OFELIA VLAN ID.
 -->
 
-###Control Plane: TCP Proxy
+##Control Plane: TCP Proxy
 The OFGW acts as TCP Proxy and forwards the control traffic from the devices to the OpenFlow user's controller and vice-versa. The TCP Proxy is implemented as an [iptables](http://www.netfilter.org/projects/iptables/index.html) configuration handled by the TBAM Agent. 
 
 Additionally, the TBAM Agent takes care of the interruption of the connections after the expiration of a time-slot. This functionality is implemented through the iptables's [conntrack](http://www.netfilter.org/projects/conntrack-tools/index.html) module so that only the TCP proxy is reset without affecting the rest of the OFGW's firewall operations.
@@ -24,11 +24,11 @@ Additionally, the TBAM Agent takes care of the interruption of the connections a
 *setTCPProxy(controller)* and *remTCPProxy(controller)* respectively activate and disable the forwarding of the control traffic to and from the user's controller. The *controller* parameter is a python string: *"ip:port"*; for instance *"192.168.1.1:6633"*.
 
 <!-- MODIFICATO -->
-###Management Plane: MGMT Actions
+##Management Plane: MGMT Actions
 The [Management Plane module](https://github.com/fp7-alien/OCF-OFGW/tree/master/ofgw_mngt) provides an access to a device for the island administrators and users. It is used to perform some initial configuration of a device (e.g., VLANs, port configuration, etc.) as well as the configuration of the OpenFlow protocol. The TBAM agent leverages the Management Plane module to return island's topology details to the Expedient UI (e.g., datapath_ids, available ports, links, etc.). The communication between TBAM-Agent and the Management Plane module is achieved through RESTful interface.
 
 
-###Users authentication
+##Users authentication
 The OFGW represents the only entry point for accessing the ALIEN Island’s network resources. Both users and admins use the Management interface exposed through the OFGW to perform custom configurations of the devices. 
 The access is guaranteed exploiting the OFELIA LDAP server. The OGFW should be configured to permits the ssh access using the OFELIA credential. The OFGW takes care of associate the OFGW to the ALIEN project that is currently granted. In other words OFGW is informed by the [TBAM-RM](https://github.com/fp7-alien/OCF-TBAM) that a new ALIEN slice should be started or stopped and the TBAM-AGENT configures the OFGW to authorized the access of only the users associated with that particular project. The association between users and project is stored inside the LDAP, so the OFGW at each connection will contact the LDAP server to authorize each user. In this way the authenticated user is able to access the Management module functionalities.
 
@@ -71,4 +71,7 @@ To connect the Resource Manager to the TBAM Agent, the two variables *OFGW_ADDRE
 
 By default, the configuration considers that both TBAM Agent and Resource Manager reside on the same machine (*OFGW_ADDRESS = "127.0.0.1"*) and the TCP port used for the communication is 8234 (*OFGW_PORT = 8234*).
 
-
+<!-- MODIFICATO -->
+As aforementioned the TBAM-Agent uses the Management Plane module to retrive network devices information such as DPIDs and links. For testing purposes, this connection is disable by default and the TBAM-Agent is configured to return fake information.  The connection to the Management Plane module can be enabled/disabled by changing the *CONN_WITH_MGMT* parameter to *True*/*False* in the *src/main.py*. Obviously, the activation of this connection requires the installation and start of the Management Plane.
+ 
+<!--FINE MODIFICATO -->
