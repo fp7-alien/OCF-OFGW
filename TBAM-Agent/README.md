@@ -47,14 +47,14 @@ The configuration process to authenticate the users in the OFGW is detailed cons
 *+ : ALL : LOCAL <br>
 EXCEPT root login:ALL EXCEPT LOCAL*
 
-After the configuration root user is able to login through ssh. Other users can authenticate only if the ALIEN slice is started and they are associated to the project. Moreover not only the installation process of the TBAM-AGENT but also the communication with the TBAM-RM must be completed.  
+After the configuration root user is able to login through ssh. Other users can authenticate only if the ALIEN slice is started and they are associated to the project. Moreover not only the installation process of the TBAM-AGENT but also the communication with the TBAM-RM must be completed.
 	
 
 <!--FINE MODIFICATO -->
 
 ##INSTALLATION
 <!-- MODIFICATO -->
-The communication with the [TBAM Resource Manager](https://github.com/fp7-alien/OCF-TBAM/blob/master/TBAM-RM/README.md#tbam-resource-manager) is obtained with a SecureXMLRPC interface. Currently, the RPC server in the TBAM Agent uses fixed pre-installed certificates. In production the certifications should be generated using the [ClearingHouse](https://github.com/motine/Ohouse). The TBAM Agent uses three certificates for the SecureXMLRPC authentication; moreover, the references contained in the code must be compliant with your local path. By default the references point to the certs folder, where all the certifications for testing are pre-installed. In particular, the parameters of the certificates used in the TBAM Agent are:
+The communication with the [TBAM Resource Manager](https://github.com/fp7-alien/OCF-TBAM/blob/master/TBAM-RM/README.md#tbam-resource-manager) is obtained with a SecureXMLRPC interface. Currently, the RPC server in the TBAM Agent uses fixed pre-installed certificates. In production the certifications should be generated using the [ClearingHouse](http://www.eict.de/c-bas). The TBAM Agent uses three certificates for the SecureXMLRPC authentication; moreover, the references contained in the code must be compliant with your local path. By default the references point to the certs folder, where all the certifications for testing are pre-installed. In particular, the parameters of the certificates used in the TBAM Agent are:
 <!--FINE MODIFICATO -->
 
 Parameter | Reference
