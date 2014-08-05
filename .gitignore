@@ -19,3 +19,4 @@ docs/_build/
 # OFGW Mngt Configuration
 inventory.conf
 groups.yaml
+neighbours.yaml
