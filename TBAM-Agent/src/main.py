@@ -18,7 +18,7 @@ SERVER_PORT = 8234
 
 ACCESS_CONF_FILE = '/etc/security/access.conf'
 
-CONN_WITH_MGMT = False
+CONN_WITH_MGMT = True
 
 class RPCServer(SimpleXMLRPCRequestHandler):
     rpc_paths = ('/RPC2',)
@@ -35,15 +35,6 @@ class Links():
         self.portDst = portDst
         
 def main():
-    
-        # cmd = ['/root/%s.sh' %(split[2]), '%/s' %(delay)]   
-        # Avviare un bash file:
-        # cmd = ['/root/AlienAM/prova.sh']
-        # subprocess.Popen(cmd, shell=True)
-        # oppure
-        # os.system('/root/AlienAM/prova.sh')
-        # oppure per lanciare un comando...
-        # os.system("ls")
     
     class xmlrpc_registers:
         def __init__(self):
@@ -74,7 +65,6 @@ def main():
                 req = urllib.urlopen('http://localhost:5000/neighbours')
                 data = json.load(req)
                 for each in data:
-                    #print "current element: %s and %s " % (str((data[each]["dpid"]).replace("-", ":")), str(data[each]["ports"])) 
                     for elementPort, destDpid in data[each]["ports"].iteritems():
                         elementDpid = (data[each]["dpid"]).replace("-", ":")
                         destDpid = destDpid.replace("-", ":")
@@ -94,14 +84,11 @@ def main():
                             dict = links[destDpid] [elementDpid]
                             for key in dict.iterkeys():
                                 links[destDpid] [elementDpid] = {key : elementPort}
-                    #print "Current dict %s" % str(links)
             
                 for dpid in links.iteritems():
-                    #print "dpid %s" %str(dpid)
                     for link in dpid[1].iteritems():
                         print link
                         for srcPort, dstPort in link[1].iteritems():
-                            #print str(dpid[0]) + " " + str(link[0]) + " " + str(srcPort) + " " + str(dstPort)
                             linksString.append(Links(dpidSrc=str(dpid[0]), portSrc=srcPort, dpidDst=str(link[0]), portDst=dstPort))
             return linksString
         
@@ -210,7 +197,6 @@ def main():
     
         
     server_address = (SERVER_ADDRESS, SERVER_PORT)
-    # TODO: We can keep this call (but the certs must be generated) or the TBAM Agent could be integrated in the AMsoil
     server = SecureXMLRPCServerOriginal(server_address, logRequests=False, keyfile=SERVER_KEY_PATH,
                                         certfile=SERVER_CERT_PATH,
                                         ca_certs=TRUSTED_CERT_PATH)
