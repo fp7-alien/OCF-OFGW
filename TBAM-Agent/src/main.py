@@ -87,7 +87,6 @@ def main():
             
                 for dpid in links.iteritems():
                     for link in dpid[1].iteritems():
-                        print link
                         for srcPort, dstPort in link[1].iteritems():
                             linksString.append(Links(dpidSrc=str(dpid[0]), portSrc=srcPort, dpidDst=str(link[0]), portDst=dstPort))
             return linksString
