@@ -49,27 +49,7 @@ EXCEPT root login:ALL EXCEPT LOCAL
 ```
 After the configuration, the root user is able to login through a SSH connection. Other users can authenticate only if both 
 TBAM Agent and TBAM RM are up and running and the users are associated to the current experiment. 
-
-###OFGW Configurations for users authentication
 
-The configuration process to authenticate the users in the OFGW is detailed considering debian 6 as operating system and a [OFELIA](https://github.com/fp7-ofelia/ocf/wiki/Overview) LDAP sever:
-
-1. DNS bind between LDAP url and its ip address (e.g., add LDAP_ip_address LDAP_url in /etc/hosts)
-2.	Install package ibpam-ldapd (e.g, apt-get install ibpam-ldapd) and follow the procedure on the UI to configure the package. When required:
-	1. Insert the LDAP url
-	2. Set the correct DN
-	3. Select not to root management
-	4. Authorize the modification of *nsswitch.conf*: check that *passwd,group,netgroup* are selected.
-3. Add *auth required    pam_access.so* in */etc/pam.d/common-auth*
-4. Add *session     required      pam_mkhomedir.so skel=/etc/skel umask=0022* in */etc/pam.d/common-session*
-5. Create file /etc/security/access.conf (for e.g., touch /etc/security/access.conf) and add this three line: <br> 
-
-	```
-	+ : ALL : LOCAL*
-	+ : @proj_<project_UUID>_<project_name> : ALL*
-	EXCEPT root login:ALL EXCEPT LOCAL*
-	```
-After the configuration, the root user is able to login through a SSH connection. Other users can authenticate only if both TBAM Agent and TBAM RM are up and running and the users are associated to the current experiment.
  
 ###Configuration interfaceThe TBAM Agent receives the LDAP configuration parameters through the following interface:Set/remUserAuth(projectInfo): respectively write or clear the projectInfo in the /etc/access.conf file. The projectInfo containts project_UUID and project_name and allows to query the LDAP server to authenticate only the permitted users.
 
