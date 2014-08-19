@@ -41,9 +41,12 @@ selected.
 /etc/pam.d/common-session
 5. Create file /etc/security/access.conf (e.g., touch /etc/security/access.conf) and add 
 this three line: 
+
+```
 + : ALL : LOCAL 
 + : @proj_<project_UUID>_<project_name> : ALL
 EXCEPT root login:ALL EXCEPT LOCAL
+```
 After the configuration, the root user is able to login through a SSH connection. Other users can authenticate only if both 
 TBAM Agent and TBAM RM are up and running and the users are associated to the current experiment. 
 
