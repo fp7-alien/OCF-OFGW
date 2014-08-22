@@ -32,6 +32,7 @@ To connect the OFGW’s LDAP client to the central OFELIA LDAP server, the follo
 /etc/hosts);
 2. Install package libpam-ldapd (e.g, apt-get install ibpam-ldapd) and follow the procedure on the 
 UI to configure the package. When required:
+
 	a. Insert the LDAP url (ldap://ldap.ibbt.fp7-ofelia.eu)
 	b. Set the correct DN (dc=fp7-ofelia,dc=eu)
 	c. Select not to root management
