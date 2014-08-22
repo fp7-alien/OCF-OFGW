@@ -22,7 +22,8 @@ By default, the configuration considers that both TBAM Agent and Resource Manage
 The TBAM-Agent uses the Management Plane module to retrieve network details such as DPIDs of the devices and links. For testing purposes, this connection is disabled by default and the TBAM-Agent is configured to return fake information.  The connection to the Management Plane module can be enabled/disabled by changing the CONN_WITH_MGMT parameter to True/False in the src/main.py. Obviously, the activation of this connection requires the Management Plane to be installed, configured and started (see [OFGW_MGMT](https://github.com/fp7-alien/OCF-OFGW/tree/master/ofgw_mngt))
 
 ##User's authentication
-On the OFGW, both users/experimenters and administrators can use the Management interface of the devices to perform custom configurations or to retrieve the current status. The access is guaranteed by the local LDAP client which is connected to the central OFELIA LDAP server to allow the users SSH access using the OFELIA credentials. While the island administrator has always access to the OFGW, normal users are allowed to login only during their experiment time-slot. The LDAP client is configured by the TBAM Agent which, in turn, receives the experiments details (e.g. project id, time-slot, etc.) from the TBAM RM. With these details, the TBAM Agent re-configures the 
+On the OFGW, both users/experimenters and administrators can use the Management interface of the devices to perform custom configurations or to retrieve the current status. The access is guaranteed by the local LDAP client which is connected to the central OFELIA LDAP server to allow the users SSH access using the OFELIA credentials. 
+While the island administrator has always access to the OFGW, normal users are allowed to login only during their experiment time-slot. The LDAP client is configured by the TBAM Agent which, in turn, receives the experiments details (e.g. project id, time-slot, etc.) from the TBAM RM. With these details, the TBAM Agent re-configures the 
 LDAP client at the beginning of each time-slot so that only the authorized users are enabled to access the OFGW
 
 ###LDAP client configuration
@@ -33,11 +34,11 @@ To connect the OFGW’s LDAP client to the central OFELIA LDAP server, the follo
 2. Install package libpam-ldapd (e.g, apt-get install ibpam-ldapd) and follow the procedure on the 
 UI to configure the package. When required:
 
-	a. Insert the LDAP url (ldap://ldap.ibbt.fp7-ofelia.eu)
-	b. Set the correct DN (dc=fp7-ofelia,dc=eu)
-	c. Select not to root management
+	a. Insert the LDAP url (ldap://ldap.ibbt.fp7-ofelia.eu)<br>
+	b. Set the correct DN (dc=fp7-ofelia,dc=eu)<br>
+	c. Select not to root management<br>
 	d. Authorize the modification of nsswitch.conf: check that passwd,group,netgroup are 
-selected.
+selected.<br>
 3. Add auth required pam_access.so in /etc/pam.d/common-auth
 4. Add session required pam_mkhomedir.so skel=/etc/skel umask=0022 in 
 /etc/pam.d/common-session
@@ -53,7 +54,9 @@ After the configuration, the root user is able to login through a SSH connection
 TBAM Agent and TBAM RM are up and running and the users are associated to the current experiment. 
 
  
-###Configuration interfaceThe TBAM Agent receives the LDAP configuration parameters through the following interface:Set/remUserAuth(projectInfo): respectively write or clear the projectInfo in the /etc/access.conf file. The projectInfo containts project_UUID and project_name and allows to query the LDAP server to authenticate only the permitted users.
+###Configuration interface
+The TBAM Agent receives the LDAP configuration parameters through the following interface:
+Set/remUserAuth(projectInfo): respectively write or clear the projectInfo in the /etc/access.conf file. The projectInfo containts project_UUID and project_name and allows to query the LDAP server to authenticate only the permitted users.
 
 
 ##Data Plane: OpenvSwitch
@@ -96,12 +99,28 @@ The OFGW acts as TCP Proxy and forwards the control traffic from the devices to 
 Additionally, the TBAM Agent takes care of the interruption of the connections after the expiration of a time-slot. This functionality is implemented through the iptables's [conntrack](http://www.netfilter.org/projects/conntrack-tools/index.html) module so that only the TCP proxy is reset without affecting the rest of the OFGW's firewall operations.
 
 The Control Plane requires the iptables version equal or higher to 1.4.14 and conntrack packages. The installation procedure is the following (root previleges are needed):
-- conntrack:
-	```	apt-get install conntrack	```
-- iptables:
-	```
-	apt-get autoremove iptables	apt-get install git dh-autoreconf pkg-config 
-	git clone git://git.netfilter.org/iptables.git	git checkout -b 1.4.20 remotes/origin/stable-1.4.20	./autogen.sh && ./configure && make	make install	cd /sbin	ln -s /usr/local/sbin/iptables iptables 	sysctl net.ipv4.ip_forward=1	```
+
+- conntrack:
+
+	```
+	apt-get install conntrack
+	```
+
+
+- iptables:
+
+	```
+	apt-get autoremove iptables
+	apt-get install git dh-autoreconf pkg-config 
+	git clone git://git.netfilter.org/iptables.git
+	git checkout -b 1.4.20 remotes/origin/stable-1.4.20
+	./autogen.sh && ./configure && make
+	make install
+	cd /sbin
+	ln -s /usr/local/sbin/iptables iptables 
+	sysctl net.ipv4.ip_forward=1
+	```
+
 ###Configuration interface
 *setTCPProxy(controller)* and *remTCPProxy(controller)* respectively activate and disable the forwarding of the control traffic to and from the user's controller. The *controller* parameter is a python string: *"ip:port"*; for instance *"192.168.1.1:6633"*.
 
