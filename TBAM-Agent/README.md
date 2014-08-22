@@ -45,7 +45,7 @@ this three line:
 ```
 + : ALL : LOCAL 
 + : @proj_<project_UUID>_<project_name> : ALL
-EXCEPT root login:ALL EXCEPT LOCAL
+- : EXCEPT root login:ALL EXCEPT LOCAL
 ```
 After the configuration, the root user is able to login through a SSH connection. Other users can authenticate only if both 
 TBAM Agent and TBAM RM are up and running and the users are associated to the current experiment. 
@@ -89,7 +89,7 @@ ovs-ofctl mod-port switch 3 up
 setOvs(VLANs) and remOvs(VLANs) respectively add or remove the flows entry in the OpenvSwitch for the VLANs mapping. The VLANs parameter is a python dict: *{OFELIA-VLAN : ALIEN-VLAN ...}*; for instance *{"10" : "0xffff", "30" : "20"}* means that OFELIA VLAN 10 is set as untagged within ALIEN and OFELIA VLAN 30 is rewritten to the ALIEN VLAN 20. 
 
 ##Control Plane: TCP Proxy
-The OFGW acts as TCP Proxy and forwards the control traffic from the devices to the OpenFlow user's controller and vice-versa. The TCP Proxy is implemented as an [iptables](http://www.netfilter.org/projects/iptables/index.html) configuration handled by the TBAM Agent. 
+The OFGW acts as TCP Proxy and forwards the control traffic from the devices to the OpenFlow user's controller and vice-versa. The TCP Proxy is implemented as an [iptables](http://www.netfilter.org/projects/iptables/index.html) configuration handled by the TBAM Agent. All the switches must be configured to point the *TCP port 6633* of the OFGW machine for the OpenFlow control messages.
 
 Additionally, the TBAM Agent takes care of the interruption of the connections after the expiration of a time-slot. This functionality is implemented through the iptables's [conntrack](http://www.netfilter.org/projects/conntrack-tools/index.html) module so that only the TCP proxy is reset without affecting the rest of the OFGW's firewall operations.
 
