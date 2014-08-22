@@ -27,6 +27,7 @@ LDAP client at the beginning of each time-slot so that only the authorized users
 
 ###LDAP client configuration
 To connect the OFGW’s LDAP client to the central OFELIA LDAP server, the following steps are required:
+
 1. DNS bind between LDAP url and its IP address (add the line LDAP_IP_address LDAP_url to
 /etc/hosts);
 2. Install package ibpam-ldapd (e.g, apt-get install ibpam-ldapd) and follow the procedure on the 
