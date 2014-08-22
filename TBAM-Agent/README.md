@@ -32,10 +32,10 @@ To connect the OFGW’s LDAP client to the central OFELIA LDAP server, the follo
 /etc/hosts);
 2. Install package libpam-ldapd (e.g, apt-get install ibpam-ldapd) and follow the procedure on the 
 UI to configure the package. When required:
-a. Insert the LDAP url (ldap://ldap.ibbt.fp7-ofelia.eu)
-b. Set the correct DN (dc=fp7-ofelia,dc=eu)
-c. Select not to root management
-d. Authorize the modification of nsswitch.conf: check that passwd,group,netgroup are 
+	a. Insert the LDAP url (ldap://ldap.ibbt.fp7-ofelia.eu)
+	b. Set the correct DN (dc=fp7-ofelia,dc=eu)
+	c. Select not to root management
+	d. Authorize the modification of nsswitch.conf: check that passwd,group,netgroup are 
 selected.
 3. Add auth required pam_access.so in /etc/pam.d/common-auth
 4. Add session required pam_mkhomedir.so skel=/etc/skel umask=0022 in 
