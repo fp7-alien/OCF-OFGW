@@ -93,7 +93,7 @@ def main():
         
         def setTCPProxy(self, controller):
             # show iptables: iptables -t nat -L -n -v
-            os.system("iptables -t nat -A POSTROUTING -j MASQUERADE")
+            os.system("iptables -t nat -A POSTROUTING -j MASQUERADE -p tcp --dport 6633")
             os.system("iptables -t nat -A PREROUTING -p tcp --dport 6633 -j DNAT --to-destination %s" % (controller))
             
             return True
@@ -111,10 +111,10 @@ def main():
                     present = False
             present = True
             while(present):
-                p = subprocess.Popen('iptables -t nat --check POSTROUTING -j MASQUERADE', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                p = subprocess.Popen('iptables -t nat --check POSTROUTING -j MASQUERADE -p tcp --dport 6633', shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
                 out, error = p.communicate()
                 if(not error):
-                    os.system("iptables -t nat -D POSTROUTING -j MASQUERADE")
+                    os.system("iptables -t nat -D POSTROUTING -j MASQUERADE -p tcp --dport 6633")
                 else:
                     present = False
 
